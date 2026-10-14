@@ -1,0 +1,17 @@
+{
+  "app": "Participation Tracker",
+  "date": "1/1/2026, 12:00:00 PM",
+  "data": {
+    "Period 1 - Math": {
+      "students": {
+        "John Smith": {"picks": 3, "correct": 2, "incorrect": 1, "volunteers": 1, "skips": 0},
+        "Doe, Jane": {"picks": 2, "correct": 1, "incorrect": 0, "volunteers": 0, "skips": 1}
+      }
+    },
+    "Period 2 - Science": {
+      "students": {
+        "Ava Stone": {"picks": 0, "correct": 0, "incorrect": 0, "volunteers": 0, "skips": 0}
+      }
+    }
+  }
+}

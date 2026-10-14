@@ -1,0 +1,4 @@
+-r requirements.txt
+# PyInstaller 6.11.0 does not support Python 3.14; use a newer release.
+pyinstaller==6.16.0
+pytest==8.4.2

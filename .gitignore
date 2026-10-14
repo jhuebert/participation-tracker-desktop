@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.db
+*.db-shm
+*.db-wal
+participation_tracker.log
+/build/
+/build_onedir/
+/dist/
+/dist_onedir/

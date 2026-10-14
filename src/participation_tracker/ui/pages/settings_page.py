@@ -1,0 +1,1 @@
+"""Settings page widgets are assembled by MainWindow around persisted settings."""

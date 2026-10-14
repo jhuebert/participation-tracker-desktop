@@ -1,0 +1,7 @@
+# Runtime dependencies.
+#
+# NOTE: The implementation plan pinned PySide6==6.7.3, which requires
+# Python 3.11/3.12. The build machine here only has Python 3.14, and 6.7.3
+# has no wheels for it, so we pin the newest release that does. Change this
+# back to 6.7.3 if you build with Python 3.12.
+PySide6==6.12.0

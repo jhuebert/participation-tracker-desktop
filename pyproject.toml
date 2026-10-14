@@ -1,0 +1,9 @@
+[project]
+name = "participation-tracker-desktop"
+version = "1.1.0"
+description = "Native Windows desktop Participation Tracker with second-monitor overlay"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
