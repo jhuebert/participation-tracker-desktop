@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QGuiApplication
+from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 from participation_tracker import config
@@ -25,6 +25,13 @@ def main() -> int:
     app = QApplication(sys.argv)
     app.setApplicationName(config.APP_NAME)
     app.setOrganizationName("ParticipationTracker")
+    icon_path = (
+        Path(sys._MEIPASS) / "assets" / "icon.ico"
+        if getattr(sys, "frozen", False)
+        else config.app_dir() / "assets" / "icon.ico"
+    )
+    app_icon = QIcon(str(icon_path))
+    app.setWindowIcon(app_icon)
     apply_theme(app)
 
     def show_uncaught(exc):

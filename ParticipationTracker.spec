@@ -8,7 +8,7 @@ a = Analysis(
     ['src/participation_tracker/main.py'],
     pathex=['src'],
     binaries=[],
-    datas=[('src/participation_tracker/db/schema.sql', 'participation_tracker/db'), ('assets/icon.ico', 'assets')],
+    datas=[('src/participation_tracker/db/schema.sql', 'participation_tracker/db'), ('assets/icon.ico', 'assets'), ('assets/chime.wav', 'assets')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

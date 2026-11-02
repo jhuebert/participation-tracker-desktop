@@ -2,3 +2,7 @@
 # PyInstaller 6.11.0 does not support Python 3.14; use a newer release.
 pyinstaller==6.16.0
 pytest==8.4.2
+# Decodes the chime MP3 into assets/chime.wav (tools/convert_chime.py).
+miniaudio==1.71
+# Creates the multi-resolution Windows icon from its bundled PNG source.
+Pillow==13.0.0

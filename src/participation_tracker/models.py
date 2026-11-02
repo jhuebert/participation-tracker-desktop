@@ -55,6 +55,8 @@ class Settings:
 
     overlay_enabled: bool = True
 
+    chime_enabled: bool = True
+
 
 def default_settings() -> Settings:
     return Settings()
