@@ -7,12 +7,20 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 import pytest
 from PySide6.QtWidgets import QApplication
 
+from participation_tracker.overlay import OverlayWindow
 from participation_tracker.ui.main_window import MainWindow
 
 
 @pytest.fixture(scope="module")
 def qapp():
     return QApplication.instance() or QApplication([])
+
+
+def _summary_rows(count: int) -> list[tuple[str, str, str, str, str, str]]:
+    return [
+        (str(rank), f"Student {rank}", "0", "0", "0.00", "0.00")
+        for rank in range(1, count + 1)
+    ]
 
 
 def test_overlay_rows_use_selected_class_not_stale_table_count(qapp, repo):
@@ -44,3 +52,25 @@ def test_overlay_rows_use_selected_class_not_stale_table_count(qapp, repo):
     finally:
         window.overlay.close()
         window.close()
+
+
+def test_overlay_grows_after_hidden_switch_to_larger_class(qapp, monkeypatch):
+    monkeypatch.setenv("DUAL_DISPLAY_FAKE_SECONDARY", "5000,0,1920,1080")
+    overlay = OverlayWindow()
+    try:
+        overlay.show_leaderboard_summary("Small", _summary_rows(5))
+        qapp.processEvents()
+        small_height = overlay.height()
+
+        # _load_class hides the overlay before refreshing it for the new class.
+        overlay.hide()
+        overlay.show_leaderboard_summary("Large", _summary_rows(12))
+        qapp.processEvents()
+
+        table = overlay.summary_table
+        assert table.rowCount() == 12
+        assert overlay.height() > small_height
+        assert overlay.height() >= table.height()
+        assert not table.verticalScrollBar().isVisible()
+    finally:
+        overlay.close()

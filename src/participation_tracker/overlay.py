@@ -180,7 +180,8 @@ class OverlayWindow(QWidget):
                 table.setItem(row_index, column, item)
         table.resizeColumnsToContents()
         table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
-        table.verticalHeader().setDefaultSectionSize(40)
+        row_height = 40
+        table.verticalHeader().setDefaultSectionSize(row_height)
 
         fallback = self.screen().geometry() if self.screen() else None
         fw, fh = (fallback.width(), fallback.height()) if fallback else (1920, 1080)
@@ -191,12 +192,28 @@ class OverlayWindow(QWidget):
         available_height = max(240, int((bottom - top - 2 * _SCREEN_MARGIN) / ratio))
         width = min(1200, available_width)
         visible_rows = min(max(len(rows), 4), 16)
-        table_height = min(available_height - 120, 48 + visible_rows * 40)
+        # Include the header and table frame so every visible row fits without
+        # a scrollbar or a clipped final row.
+        table_chrome = table.horizontalHeader().height() + 2 * table.frameWidth()
+        table_height = min(available_height - 120, table_chrome + visible_rows * row_height)
         table.setFixedHeight(max(120, table_height))
-        self.adjustSize()
-        size = self._content_size()
-        width = min(max(width, size.width()), available_width)
-        height = min(size.height(), available_height)
+        # The overlay is hidden while switching classes, and a hidden window
+        # does not run a layout pass. Its size hint can therefore still describe
+        # the previous class's table height, leaving the larger class clipped.
+        # Compute the required height from the table and layout chrome instead.
+        outer_margins = self.layout().contentsMargins()
+        frame_margins = self.frame.layout().contentsMargins()
+        summary_layout = self.summary_content.layout()
+        summary_margins = summary_layout.contentsMargins()
+        height = min(
+            outer_margins.top() + outer_margins.bottom()
+            + frame_margins.top() + frame_margins.bottom()
+            + summary_margins.top() + summary_margins.bottom()
+            + self.summary_title.sizeHint().height()
+            + summary_layout.spacing()
+            + table.height(),
+            available_height,
+        )
         x = int(left + ((right - left) - width * ratio) / 2)
         y = int(top + ((bottom - top) - height * ratio) / 2)
         self.setGeometry(x, y, width, height)
