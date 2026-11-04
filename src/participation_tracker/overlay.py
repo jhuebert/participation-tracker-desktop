@@ -53,8 +53,8 @@ class OverlayWindow(QWidget):
         self.summary_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.summary_title.setStyleSheet("font-size: 26px; font-weight: 700; color: white;")
         summary_layout.addWidget(self.summary_title)
-        self.summary_table = QTableWidget(0, 4)
-        self.summary_table.setHorizontalHeaderLabels(["Rank", "Name", "Total Points", "Score"])
+        self.summary_table = QTableWidget(0, 6)
+        self.summary_table.setHorizontalHeaderLabels(["Rank", "Name", "Picks", "Volunteers", "Total Points", "Score"])
         self.summary_table.setAlternatingRowColors(True)
         self.summary_table.setWordWrap(False)
         self.summary_table.setSortingEnabled(False)
@@ -63,8 +63,8 @@ class OverlayWindow(QWidget):
         self.summary_table.setSelectionMode(QTableWidget.SelectionMode.NoSelection)
         self.summary_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
         self.summary_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
-        self.summary_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
-        self.summary_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
+        for column in range(2, 6):
+            self.summary_table.horizontalHeader().setSectionResizeMode(column, QHeaderView.ResizeMode.ResizeToContents)
         self.summary_table.setStyleSheet("""
             QTableWidget { background: #F8FAFC; alternate-background-color: #EEF2FF;
                 color: #0F172A; border: 1px solid #C4B5FD; border-radius: 8px;
@@ -159,10 +159,11 @@ class OverlayWindow(QWidget):
         QTimer.singleShot(60, self._restore_focus)
         return self.monitor_status
 
-    def show_leaderboard_summary(self, class_name: str, rows: list[tuple[str, str, str, str]]) -> str:
+    def show_leaderboard_summary(self, class_name: str, rows: list[tuple[str, str, str, str, str, str]]) -> str:
         """Show a centered leaderboard summary on the extended display.
 
-        ``rows`` contain rank, student name, total participation points, and score.
+        ``rows`` contain rank, student name, picks, volunteers, total participation
+        points, and score.
         """
         self.display_mode = "leaderboard"
         self.student_content.hide()

@@ -1168,19 +1168,29 @@ class MainWindow(QMainWindow):
             elif self.leaderboard_summary_toggle.isChecked():
                 self._show_leaderboard_summary()
 
-    def _leaderboard_summary_rows(self) -> list[tuple[str, str, str, str]]:
-        """Return Rank, Name, Total Points, Score ordered by displayed rank."""
-        table = self.leaderboard_table
+    def _leaderboard_summary_rows(self) -> list[tuple[str, str, str, str, str, str]]:
+        """Return all students' Rank, Name, Picks, Volunteers, Total Points, and Score rows."""
+        if not self.current_class:
+            return []
+
+        # Build the overlay from the class data, not the on-screen table. The
+        # table is a presentation widget and may still be refreshing when the
+        # class changes; using it here could carry over the previous class's
+        # row count and truncate the monitor summary.
+        students = self.repo.list_students(self.current_class.id)
+        students.sort(key=lambda student: leaderboard_score(student, self.settings), reverse=True)
         rows = []
-        for row in range(table.rowCount()):
-            rank = table.item(row, 0)
-            name = table.item(row, 1)
-            points = table.item(row, 7)
-            score = table.item(row, 8)
-            if rank is None or name is None or points is None or score is None:
-                continue
-            rows.append((rank.text(), name.text(), points.text(), score.text()))
-        rows.sort(key=lambda values: int(values[0]))
+        for rank, student in enumerate(students, 1):
+            points = participation_points(student, self.settings)
+            score = leaderboard_score(student, self.settings)
+            rows.append((
+                str(rank),
+                student.name,
+                str(student.picks),
+                str(student.volunteers),
+                f"{points:.2f}",
+                f"{score:.2f}" if student.picks else "—",
+            ))
         return rows
 
     def _show_leaderboard_summary(self) -> None:
