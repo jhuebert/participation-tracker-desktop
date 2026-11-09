@@ -271,7 +271,12 @@ class MainWindow(QMainWindow):
                               self._compact, leading=(self.leaderboard_summary_toggle,), stretch_at=0)
         self.leaderboard_table = QTableWidget(0, 9)
         self.leaderboard_table.setHorizontalHeaderLabels(["Rank", "Name", "Picks", "Volunteers", "Skips", "Correct", "Incorrect", "Total Points", "Score"])
-        for column, tip in ((7, "Total participation points"), (8, "Leaderboard score = points ÷ picks")):
+        for column, tip in (
+            (7, "Total participation points"),
+            (8, "Leaderboard score = (Correct × correct value ÷ Times Picked)"
+             " + (Volunteers × volunteer value) + (Skips × skip value)"
+             " + (Incorrect × incorrect value). Values and Add/Subtract effects come from Settings."),
+        ):
             self.leaderboard_table.horizontalHeaderItem(column).setToolTip(tip)
         self.leaderboard_table.setAlternatingRowColors(True)
         self.leaderboard_table.setSortingEnabled(True)
@@ -1300,15 +1305,22 @@ class MainWindow(QMainWindow):
     def _update_formula(self, *_):
         if not hasattr(self, "scoring_controls"):
             return
-        terms = []
-        for key, (label, count) in {
-            "correct": ("correct", "correct"), "volunteer": ("volunteers", "volunteers"),
-            "incorrect": ("incorrect", "incorrect"), "skip": ("skips", "skips"),
+        terms = {}
+        for key, label in {
+            "correct": "correct", "volunteer": "volunteers",
+            "incorrect": "incorrect", "skip": "skips",
         }.items():
             effect, points = self.scoring_controls[key]
             sign = "+" if effect.currentText() == "add" else "−"
-            terms.append(f"{sign} ({label} × {points.value():g})")
-        self.formula_preview.setText("Total Points = " + " ".join(terms) + "\nLeaderboard Score = Total Points ÷ Times Picked")
+            terms[key] = f"{sign} ({label} × {points.value():g})"
+        score_terms = [
+            f"{terms['correct']} ÷ Times Picked",
+            terms["volunteer"], terms["skip"], terms["incorrect"],
+        ]
+        self.formula_preview.setText(
+            "Total Points = " + " ".join(terms.values())
+            + "\nLeaderboard Score = " + " ".join(score_terms)
+        )
 
     # ---------------------------------------------------------------- toast
     def toast(self, message, kind="info"):

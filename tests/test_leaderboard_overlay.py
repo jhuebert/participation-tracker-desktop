@@ -54,6 +54,32 @@ def test_overlay_rows_use_selected_class_not_stale_table_count(qapp, repo):
         window.close()
 
 
+def test_main_and_overlay_scores_follow_settings_formula(qapp, repo):
+    klass = repo.create_class("Scoring", ["Student"])
+    repo.set_stats(klass.id, "Student", {
+        "picks": 4, "correct": 3, "volunteers": 2, "skips": 1, "incorrect": 2,
+    })
+    settings = repo.get_settings()
+    settings.scoring_correct_points = 4
+    settings.scoring_volunteer_points = 2
+    settings.scoring_skip_points = 0.5
+    settings.scoring_incorrect_points = 1.5
+    repo.save_settings(settings)
+    window = MainWindow(repo)
+    try:
+        window._load_class(klass.id)
+        assert window.leaderboard_table.item(0, 7).text() == "12.50"
+        assert window.leaderboard_table.item(0, 8).text() == "3.50"
+        assert window._leaderboard_summary_rows()[0][4:] == ("12.50", "3.50")
+        assert (
+            "Leaderboard Score = + (correct × 4) ÷ Times Picked"
+            " + (volunteers × 2) − (skips × 0.5) − (incorrect × 1.5)"
+        ) in window.formula_preview.text()
+    finally:
+        window.overlay.close()
+        window.close()
+
+
 def test_overlay_grows_after_hidden_switch_to_larger_class(qapp, monkeypatch):
     monkeypatch.setenv("DUAL_DISPLAY_FAKE_SECONDARY", "5000,0,1920,1080")
     overlay = OverlayWindow()

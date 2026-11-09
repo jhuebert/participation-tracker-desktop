@@ -37,3 +37,13 @@ def test_csv_web_header_and_quoting():
     assert rows[1][1] == "Doe, Jane"
     assert rows[1][7:] == ["2", "1.00"]
     assert parse_class_csv(text)[0][0] == "Doe, Jane"
+
+
+def test_csv_ranking_and_scores_use_new_formula():
+    students = [
+        Student(1, 1, "Correct responses", picks=10, correct=10),
+        Student(2, 1, "Volunteers", picks=10, correct=1, volunteers=3),
+    ]
+    rows = list(csv.reader(io.StringIO(to_class_csv("Math", students, Settings()))))
+    assert [row[1] for row in rows[1:]] == ["Volunteers", "Correct responses"]
+    assert [row[8] for row in rows[1:]] == ["3.20", "2.00"]

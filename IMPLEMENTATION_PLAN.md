@@ -141,7 +141,16 @@ points = applyEffect(correctEffect, correctPoints, correct)
        + applyEffect(skipEffect, skipPoints, skips)
 ```
 
-**Leaderboard score:** `0 if picks == 0 else points / picks`.
+**Leaderboard score** (updated formula; values and Add/Subtract effects from Settings):
+
+```
+score = applyEffect(correctEffect, correctPoints, correct) / picks
+      + applyEffect(volunteerEffect, volunteerPoints, volunteers)
+      + applyEffect(skipEffect, skipPoints, skips)
+      + applyEffect(incorrectEffect, incorrectPoints, incorrect)
+```
+
+Keep the existing zero-picks behavior: score is `0` when `picks == 0`. Total participation points remain unchanged.
 
 **Weighted pick** (over the eligible list):
 
